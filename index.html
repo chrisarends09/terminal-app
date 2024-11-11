@@ -59,7 +59,7 @@
 <body>
     <div id="terminal"></div>
     <div id="button-container">
-        <button id="go-button" onclick="window.location.href='https://casl.digital'">GO</button>
+        <button id="go-button" onclick="redirectToCasl()">GO</button>
         <span id="countdown"></span>
     </div>
     <div id="footer">
@@ -68,6 +68,23 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.terminal/js/jquery.terminal.min.js"></script>
     <script>
+
+        function redirectToCasl() {
+            console.log("GO button clicked, sending POST request...");  // Debugging log
+            
+            fetch('/complete-task', {
+                method: 'POST',
+            })
+            .then(response => {
+                if (response.status === 302) {
+                    window.location.href = "http://casl.digital";  // Redirect to casl.digital
+                }
+            })
+            .catch(error => {
+                console.error('Error during redirect:', error);
+            });
+        }
+
         // Function to update date and time
         function updateDateTime() {
             const now = new Date();
@@ -101,7 +118,16 @@
 
                 if (countdown <= 0) {
                     clearInterval(interval);
-                    window.location.href = "https://casl.digital"; // Redirect after 20 seconds
+                    
+                    // Send the request to the backend to trigger the redirect
+                    fetch('/complete-task', { method: 'POST' })
+                        .then(response => {
+                            if (response.redirected) {
+                                // If the server returns a redirect, the user will be redirected automatically
+                                window.location.href = response.url;
+                            }
+                        })
+                        .catch(error => console.error("Error during redirect:", error));
                 }
             }, 1000);
         }
@@ -156,7 +182,7 @@
                                         term.echo(data);
 
                                         // Display the "GO" button and start countdown
-                                        document.getElementById('go-button').style.display = 'inline';
+                                       // document.getElementById('go-button').style.display = 'inline';
                                         startCountdown();
 
                                         // Auto-redirect after 20 seconds if not clicked

@@ -2,6 +2,7 @@
 *_copy.html
 *_copy_*.html
 *-*_copy*.yaml
+server_*.js
 
 *.rbc
 capybara-*.html
