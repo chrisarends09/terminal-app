@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"         # Expose port 3000 on the host to port 3000 in the container
+    environment:
+      - NODE_ENV=production  # Set the environment variable (optional, depending on your app)
+    volumes:
+      - .:/app               # Mount the current directory to /app in the container (for development)
+      - /app/node_modules  # This will persist the node_modules inside the container
+    # depends_on:
+    #   - db                    # If you have a database service, it can depend on it (example)
+    networks:
+      - my-terminal-network            # Optional: specify a custom network
+    restart: unless-stopped   # Restart policy for the container
+
+networks:
+  my-terminal-network:
+    driver: bridge  # Optional: specify the network driver (default is "bridge")

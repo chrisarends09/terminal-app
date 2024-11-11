@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASL LLC Interactive Terminal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery.terminal/css/jquery.terminal.min.css"/>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+        }
+
+        #terminal {
+            height: calc(100vh - 50px); /* Adjusted height to allow space for the button */
+            width: 100%;
+            margin: 0;
+        }
+
+        .terminal {
+            color: white;
+        }
+
+        #button-container {
+            position: fixed;
+            bottom: 10%; /* Adjust this if needed to align with the prompt */
+            left: 5%;
+        }
+
+        #go-button {
+            display: none;
+            font-size: 24px;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #countdown {
+            display: none;
+            font-size: 24px;
+            padding: 10px 20px;
+            color: white;
+            margin-left: 10px;
+        }
+
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 5%;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal"></div>
+    <div id="button-container">
+        <button id="go-button" onclick="window.location.href='https://casl.digital'">GO</button>
+        <span id="countdown"></span>
+    </div>
+    <div id="footer">
+        <a href="https://github.com/chrisarends09" target="_blank" style="color: white;">created by cja</a> &copy; <span id="year"></span> - <span id="datetime"></span>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <script>
+        // Function to update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const datetime = now.toLocaleString();
+
+            document.getElementById('year').textContent = year;
+            document.getElementById('datetime').textContent = datetime;
+        }
+
+        // Update date and time every second
+        setInterval(updateDateTime, 1000);
+
+        // Function to start countdown with dynamic dots
+        function startCountdown() {
+            let countdown = 20; // Countdown duration of 20 seconds
+            const countdownElement = document.getElementById('countdown');
+            const term = $('#terminal').terminal();
+
+            countdownElement.textContent = countdown;
+            countdownElement.style.display = 'inline';
+
+            let dots = ""; // Variable to manage the dots
+            const interval = setInterval(function() {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                // Add dots dynamically after the process completed message
+                dots += ".";
+                term.echo(`~$ Process completed, please wait${dots}`);
+
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    window.location.href = "https://casl.digital"; // Redirect after 20 seconds
+                }
+            }, 1000);
+        }
+
+        // Fetch the user's IP address
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const userIP = data.ip;
+
+                $(document).ready(function() {
+                    $('#terminal').terminal(function(command, term) {
+                        if (command === 'run') {
+                            term.echo('Executing command...');
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => [web internal] load build definition [[;blue;]#              ] [[;green;] 10%]');
+                            }, 1000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => transferring file: 387B           [[;blue;]###            ] [[;green;] 25%]');
+                            }, 3000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => [web internal] load metadata      [[;blue;]#######        ] [[;green;] 45%]');
+                            }, 5000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => transferring context: 2B          [[;blue;]########       ] [[;green;] 55%]');
+                            }, 6000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => [web internal] load build context [[;blue;]#########      ] [[;green;] 65%]');
+                            }, 7000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => [web] exporting to image          [[;blue;]##########     ] [[;green;] 75%]');
+                            }, 8000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => exporting layers                  [[;blue;]###########    ] [[;green;] 80%]');
+                            }, 10000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => writing image                     [[;blue;]############   ] [[;green;] 85%]');
+                            }, 11000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => [web] resolving provenance        [[;blue;]#############  ] [[;green;] 90%]');
+                            }, 12000);
+                            setTimeout(function() {
+                                term.echo('~$ Running process... => => Server is running                 [[;blue;]############## ] [[;green;]100%]');
+                            }, 13000);
+                            setTimeout(function() {
+                                term.echo('~$ Process completed, please wait.');
+
+                                // Load ASCII art from file
+                                fetch('ascii-art-casl.txt')
+                                    .then(response => response.text())
+                                    .then(data => {
+                                        term.echo(data);
+
+                                        // Display the "GO" button and start countdown
+                                        document.getElementById('go-button').style.display = 'inline';
+                                        startCountdown();
+
+                                        // Auto-redirect after 20 seconds if not clicked
+                                        setTimeout(function() {
+                                            window.location.href = "https://casl.digital";
+                                        }, 20000);
+                                    })
+                                    .catch(error => {
+                                        term.echo('Error loading ASCII art. Please try again later.');
+
+                                        // Show the button even if ASCII art doesn't load
+                                        document.getElementById('go-button').style.display = 'inline';
+                                        startCountdown();
+                                    });
+                            }, 14000);
+                        } else if (command === 'help') {
+                            term.echo('Commands available:\nrun - Start the process\nexit - Exit the terminal\ninfo - Display system info\nstatus - View current status');
+                        } else if (command === 'status') {
+                            term.echo('Current Status: Running, awaiting command input.\nIP address: ' + userIP);
+                        } else if (command === 'info') {
+                            term.echo('System Info:\nOS: Linux Quantum Plus two-state system \nRAM: 2025GB\nCPU: Intel i47-Qubit-Plus\nUptime: 1975 years');
+                        } else if (command === 'exit') {
+                            window.location.href = "https://www.google.com";
+                        } else {
+                            term.echo(`Unknown command: ${command}`);
+                        }
+                    }, {
+                        greetings: `Session Activating! type help, run or exit\nYour IP address is: ${userIP}`,
+                        name: 'js_terminal',
+                        height: '100%',
+                        prompt: '~$ ',
+                        onResize: function() {
+                            this.resize(window.innerWidth, window.innerHeight);
+                        }
+                    });
+                });
+            });
+    </script>
+</body>
+</html>
